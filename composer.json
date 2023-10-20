@@ -1,0 +1,35 @@
+{
+    "name": "40q/block-handler",
+    "description": "Handle custom Gutenberg blocks in a Roots/Radicle project",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "40Q",
+            "email": "info@40q.agency"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "BlockHandler\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BlockHandler\\Providers\\BlockHandlerServiceProvider"
+            ],
+            "aliases": {
+                "BlockHandler": "BlockHandler\\Facades\\BlockHandler"
+            }
+        }
+    }
+}
