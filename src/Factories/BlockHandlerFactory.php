@@ -2,21 +2,34 @@
 
 namespace BlockHandler\Factories;
 
-use BlockHandler\Contracts\BlockHandler;
+class BlockHandlerFactory
+{
+    private $directory;
+    private $blocks;
 
-class BlockHandlerFactory {
-    protected $blockMap = [];
-
-    public function __construct(array $blockMap) {
-        $this->blockMap = $blockMap;
+    public function __construct($directory)
+    {
+        $this->directory = $directory;
+        $this->blocks = $this->discoverBlocks();
     }
 
-    public function make($blockName): BlockHandler {
-        if (isset($this->blockMap[$blockName])) {
-            $className = $this->blockMap[$blockName];
-            return new $className;
+    private function discoverBlocks()
+    {
+        $blocks = [];
+        $blockFiles = glob($this->directory . '/*.php');
+
+        foreach ($blockFiles as $file) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            $key = 'by40q/' . strtolower($filename);
+            $class = "\\App\\Blocks\\" . $filename;
+            $blocks[$key] = $class;
         }
 
-        throw new \Exception("No handler found for block: {$blockName}");
+        return $blocks;
+    }
+
+    public function getHandler($blockName)
+    {
+        return $this->blocks[$blockName] ?? null;
     }
 }
