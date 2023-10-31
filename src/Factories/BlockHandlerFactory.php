@@ -20,13 +20,19 @@ class BlockHandlerFactory
 
         foreach ($blockFiles as $file) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
-            $key = 'by40q/' . strtolower($filename);
+            $key = 'by40q/' . $this->camelToKebab($filename);
             $class = "\\App\\Blocks\\" . $filename;
             $blocks[$key] = $class;
         }
 
         return $blocks;
     }
+
+    private function camelToKebab($string) {
+        $result = preg_replace('/(?<!^)[A-Z]/', '-$0', $string);
+        return strtolower($result);
+    }
+
 
     public function getHandler($blockName)
     {
