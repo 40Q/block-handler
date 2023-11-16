@@ -28,7 +28,8 @@ class BlockHandlerFactory
         return $blocks;
     }
 
-    private function camelToKebab($string) {
+    private function camelToKebab($string)
+    {
         $result = preg_replace('/(?<!^)[A-Z]/', '-$0', $string);
         return strtolower($result);
     }
@@ -37,5 +38,10 @@ class BlockHandlerFactory
     public function getHandler($blockName)
     {
         return $this->blocks[$blockName] ?? null;
+    }
+
+    public function getBlocks()
+    {
+        return $this->blocks;
     }
 }
