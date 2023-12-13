@@ -7,10 +7,11 @@ class BlockHandlerFactory
     private $directory;
     private $blocks;
 
-    public function __construct($directory)
+    public function __construct($directory, $distPath)
     {
         $this->directory = $directory;
         $this->blocks = $this->discoverBlocks();
+        $this->registerScripts($distPath);
     }
 
     private function discoverBlocks()
@@ -34,6 +35,20 @@ class BlockHandlerFactory
         return strtolower($result);
     }
 
+    private function registerScripts($distPath)
+    {
+        $jsonString = file_get_contents($distPath . '/manifest.json');
+        $manifest = json_decode($jsonString, true);
+
+        foreach ($manifest as $key => $file) {
+            if ((strpos($key, 'blocks/') !== false || strpos($key, 'components/') !== false) && strpos($file, '.js') !== false) {
+                wp_register_script(
+                    str_replace('.js', '', $key),
+                    $distPath . '/' . $file
+                );
+            }
+        }
+    }
 
     public function getHandler($blockName)
     {
