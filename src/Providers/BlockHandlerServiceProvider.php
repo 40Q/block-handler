@@ -11,7 +11,7 @@ class BlockHandlerServiceProvider extends ServiceProvider
     {
         $this->app->singleton(BlockHandlerFactory::class, function ($app) {
             $blocksDirectory = $app->path('Blocks');
-            return new BlockHandlerFactory($blocksDirectory);
+            return new BlockHandlerFactory($blocksDirectory, home_url() . '/dist');
         });
     }
 }
