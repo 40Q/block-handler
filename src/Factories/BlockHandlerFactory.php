@@ -37,14 +37,42 @@ class BlockHandlerFactory
 
     private function registerScripts($distPath)
     {
-        $jsonString = file_get_contents($distPath . '/manifest.json');
+        $distPathFs = $distPath;
+        $distPathUrl = $distPath;
+
+        // If it's a URL, convert to a filesystem path for reading the manifest
+        if (filter_var($distPath, FILTER_VALIDATE_URL)) {
+            $distPathFs = str_replace(
+                get_template_directory_uri(),
+                get_template_directory(),
+                $distPath
+            );
+        }
+
+        // Read manifest.json from filesystem
+        $manifestPath = $distPathFs . '/manifest.json';
+        if (!file_exists($manifestPath)) {
+            error_log('Manifest not found: ' . $manifestPath);
+            return;
+        }
+
+        $jsonString = file_get_contents($manifestPath);
         $manifest = json_decode($jsonString, true);
 
+        if (!is_array($manifest)) {
+            error_log('Invalid manifest JSON in: ' . $manifestPath);
+            return;
+        }
+
+        // Register scripts using the URL (original $distPath)
         foreach ($manifest as $key => $file) {
-            if ((strpos($key, 'blocks/') !== false || strpos($key, 'components/') !== false) && strpos($file, '.js') !== false) {
+            if (
+                (strpos($key, 'blocks/') !== false || strpos($key, 'components/') !== false)
+                && strpos($file, '.js') !== false
+            ) {
                 wp_register_script(
                     str_replace('.js', '', $key),
-                    $distPath . '/' . $file
+                    $distPathUrl . '/' . $file
                 );
             }
         }
