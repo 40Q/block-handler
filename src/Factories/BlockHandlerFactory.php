@@ -37,20 +37,15 @@ class BlockHandlerFactory
 
     private function registerScripts($distPath)
     {
-        $distPathFs = $distPath;
         $distPathUrl = $distPath;
+        $distPathFs = str_replace(
+            get_theme_file_uri(),
+            get_theme_file_path(),
+            $distPath
+        );
 
-        // If it's a URL, convert to a filesystem path for reading the manifest
-        if (filter_var($distPath, FILTER_VALIDATE_URL)) {
-            $distPathFs = str_replace(
-                get_template_directory_uri(),
-                get_template_directory(),
-                $distPath
-            );
-        }
-
-        // Read manifest.json from filesystem
         $manifestPath = $distPathFs . '/manifest.json';
+
         if (!file_exists($manifestPath)) {
             error_log('Manifest not found: ' . $manifestPath);
             return;
@@ -64,7 +59,6 @@ class BlockHandlerFactory
             return;
         }
 
-        // Register scripts using the URL (original $distPath)
         foreach ($manifest as $key => $file) {
             if (
                 (strpos($key, 'blocks/') !== false || strpos($key, 'components/') !== false)
